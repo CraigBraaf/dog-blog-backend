@@ -1,8 +1,27 @@
-GET http://localhost:5000/users
+POST https://d0g-blog.herokuapp.com/users/login
 Content-Type: application/json
 
+{
+    "username":"logan",
+    "password":"1logan"
+}
+
+
+
 ###
-POST http://localhost:5000/contact
+POST https://d0g-blog.herokuapp.com/users/register
+Content-Type: application/json
+
+{
+    "username": "logan",
+    "email": "logan@gmail.com",
+    "password": "1logan"
+}
+
+
+
+###
+POST https://d0g-blog.herokuapp.com/contact
 Content-Type: application/json
 
 

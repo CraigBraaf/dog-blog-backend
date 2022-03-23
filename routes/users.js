@@ -59,18 +59,56 @@ router.post("/register", async (req, res) => {
 });
 
 //LOGIN
+// router.post("/login", async (req, res) => {
+//   try {
+//     const user = await User.findOne({ username: req.body.username });
+//     !user && res.status(400).json("Incorrect Username!");
+
+//     const validated = await bcrypt.compare(req.body.password, user.password);
+//     !validated && res.status(400).json("Incorrect Password!");
+
+//     const { password, ...others } = user._doc;
+//     res.status(200).json(others);
+//   } catch (err) {
+//     res.status(500).json(err);
+//   }
+// });
 router.post("/login", async (req, res) => {
   try {
-    const user = await User.findOne({ username: req.body.username });
-    !user && res.status(400).json("Incorrect Username!");
-
-    const validated = await bcrypt.compare(req.body.password, user.password);
-    !validated && res.status(400).json("Incorrect Password!");
-
-    const { password, ...others } = user._doc;
-    res.status(200).json(others);
+    User.findOne({ username: req.body.username }, (err, person) => {
+      if (err) {
+        res.status(500).send({ message: err });
+        return;
+      }
+      if (!person) {
+        return res.status(404).send({ message: "User Not found." });
+      }
+      var passwordIsValid = bcrypt.compareSync(
+        req.body.password,
+        person.password
+      );
+      if (!passwordIsValid) {
+        return res.status(401).send({
+          accessToken: null,
+          message: "Invalid Password!",
+        });
+      }
+      let token = jwt.sign(
+        { _id: person._id, createBlog: person.createBlog },
+        process.env.ACCESSTOKEN,
+        {
+          expiresIn: 86400, // 24 hours
+        }
+      );
+      res.status(200).send({
+        _id: person._id,
+        username: person.username,
+        email: person.email,
+        accessToken: token,
+      });
+    });
   } catch (err) {
-    res.status(500).json(err);
+    res.status(400).json({ message: err.message });
   }
 });
 
