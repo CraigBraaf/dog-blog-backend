@@ -52,6 +52,6 @@ app.use("/posts", postRoute);
 app.use("/categories", categoryRoute);
 app.use('/contact', contactRoute)
 
-app.listen(process.env.PORT||5000, () => {
+app.listen(process.env.PORT||8000, () => {
   console.log(`Backend is running`);
 });
