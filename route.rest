@@ -1,38 +1,53 @@
+POST http://localhost:5001/users/login
+Content-Type: application/json
+
+{
+    "username": "craig",
+    "password": "hicraig"
+}
+
+
+
+###
+POST http://localhost:5000/users/register
+Content-Type: application/json
+
+{
+    "username": "simam",
+    "email": "simam@gmail.com",
+    "password": "123456"
+}
+
+###
 POST https://d0g-blog.herokuapp.com/users/login
 Content-Type: application/json
 
 {
-    "username":"logan",
-    "password":"1logan"
+    "username": "simam",
+    "password": "123456"
 }
 
+###
+POST http://localhost:5000/users/login
+Content-Type: application/json
 
+{
+    "username": "simam",
+    "password": "123456"
+}
 
 ###
 POST https://d0g-blog.herokuapp.com/users/register
 Content-Type: application/json
 
 {
-    "username": "logan",
-    "email": "logan@gmail.com",
-    "password": "1logan"
-}
-
-
-
-###
-POST https://d0g-blog.herokuapp.com/contact
-Content-Type: application/json
-
-
-{
-    "name":"tursha",
-    "email":"turshaarendse@gmail.com",
-    "message":"hey baby hope you doing well tell your mommy i say hi aunty sherlin got sick"
+    "username": "simamkele",
+    "email": "simamkele@gmail.com",
+    "password": "123456"
 }
 
 ###
-GET http://localhost:5000/users
+GET http://localhost:5001/users
 
 ###
 
@@ -41,15 +56,12 @@ GET http://localhost:5000/comments
 
 ###
 
-POST http://localhost:5000/posts
+PATCH  http://localhost:5001/posts/
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI2MjNjNWYwNjM3MjE5NDAwMjM0NzA3ZmMiLCJwcm9maWxlUGljIjoiIiwidXNlcm5hbWUiOiJjcmFpZyIsImVtYWlsIjoiYnJhYWZjcmFpZ0BnbWFpbC5jb20iLCJwYXNzd29yZCI6IiQyYiQxMCRUZE1EWmZod2d6SEc5bXROLkh1LnJlakVvbzA1eGN1dk51UTZ0ZlZ2bFVmeEo1M0QweTRkbSIsIl9fdiI6MH0.6vDN0wh5Nmq8EpD-IfyZpDx7B5UTDjgjh7dsgwol4DQ
+
 {
-    "title": "Dog Shampoo",
-    "description": "Best Shampoo for your dogs",
-    "photo": "https://postimg.cc/SnRSBjn8",
-    "CreatedBy": "CraigBraaf",
-    "categories": "Dog Shampoo",
-    "comments": "",
+    "photo": ""
 }
 
 ###
@@ -57,7 +69,7 @@ GET http://localhost:5000/users
 
 ###
 
-DELETE http://localhost:5000/users/6233290a687951f24c4b4ebf
+DELETE http://localhost:5008/users/6233290a687951f24c4b4ebf
 Content-Type: application/json
 
 {

@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router();
 const User = require("../models/User");
 const Post = require("../models/Post");
+const jwt = require("jsonwebtoken")
 const bcrypt = require("bcrypt");
 const nodemailer = require('nodemailer')
 const getUser = require('../middleware/finders')
@@ -74,68 +75,44 @@ router.post("/register", async (req, res) => {
 //   }
 // });
 router.post("/login", async (req, res) => {
-  try {
-    User.findOne({ username: req.body.username }, (err, person) => {
-      if (err) {
-        res.status(500).send({ message: err });
-        return;
-      }
-      if (!person) {
-        return res.status(404).send({ message: "User Not found." });
-      }
-      var passwordIsValid = bcrypt.compareSync(
-        req.body.password,
-        person.password
+  const { username, password } = req.body;
+  const user = await User.findOne({ username });
+  
+  if (!user) res.status(404).json({ message: "Could not find user" });
+  if (await bcrypt.compare(password, user.password)) {
+      try {
+      const access_token = jwt.sign(
+          JSON.stringify(user),
+          process.env.ACCESSTOKEN
       );
-      if (!passwordIsValid) {
-        return res.status(401).send({
-          accessToken: null,
-          message: "Invalid Password!",
-        });
+      res.status(201).json({ jwt: access_token });
+      } catch (error) {
+      res.status(500).json({ message: error.message });
       }
-      let token = jwt.sign(
-        { _id: person._id, createBlog: person.createBlog },
-        process.env.ACCESSTOKEN,
-        {
-          expiresIn: 86400, // 24 hours
-        }
-      );
-      res.status(200).send({
-        _id: person._id,
-        username: person.username,
-        email: person.email,
-        accessToken: token,
-      });
-    });
-  } catch (err) {
-    res.status(400).json({ message: err.message });
+  } else {
+      res.status(400).json({ message: "Email and password combination do not match" });
   }
 });
 
 
 //UPDATE
-router.put("/:id", async (req, res) => {
-  if (req.body.userId === req.params.id) {
-    if (req.body.password) {
-      const salt = await bcrypt.genSalt(10);
-      req.body.password = await bcrypt.hash(req.body.password, salt);
-    }
-    try {
-      const updatedUser = await User.findByIdAndUpdate(
-        req.params.id,
-        {
-          $set: req.body,
-        },
-        { new: true }
-      );
-      res.status(200).json(updatedUser);
-    } catch (err) {
-      res.status(500).json(err);
-    }
-  } else {
-    res.status(401).json("You can update only your account!");
-  }
+router.put("/:id", getUser, async (req, res) => {
+  const { username, password } = req.body;
+if (username) res.user.name = username;
+if (password) {
+    const salt = await bcrypt.genSalt();
+    const hashedPassword = await bcrypt.hash(password, salt);
+    res.user.password = hashedPassword;
+}
+
+try {
+    const updatedUser = await res.user.save();
+    res.status(201).send(updatedUser);
+} catch (error) {
+    res.status(400).json({ message: error.message });
+}
 });
+
 
 //DELETE
 router.delete("/:id", getUser, async (req, res) => {

@@ -8,7 +8,9 @@ router.post("/", async (req, res) => {
     title: req.body.title,
     description: req.body.description,
     photo: req.body.photo,
-    username: req.body.username,
+    createdby: req.body.createdby,
+    categories: req.body.categories
+    // username: req.body.username,
   })
   try {
     const savedPost = await newPost.save();
@@ -19,10 +21,10 @@ router.post("/", async (req, res) => {
 });
 
 //UPDATE POST
-router.put("/:id", async (req, res) => {
+router.patch("/:id", async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
-    if (post.username === req.body.username) {
+    if (post.title === req.body.title) {
       try {
         const updatedPost = await Post.findByIdAndUpdate(
           req.params.id,
@@ -36,7 +38,7 @@ router.put("/:id", async (req, res) => {
         res.status(500).json(err);
       }
     } else {
-      res.status(401).json("You can update only your post!");
+      res.status(401).json("You can only update your post!");
     }
   } catch (err) {
     res.status(500).json(err);

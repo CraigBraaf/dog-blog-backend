@@ -17,10 +17,20 @@ const PostSchema = new mongoose.Schema(
     },
     username: {
       type: String,
-      required: true,
+      required: false,
     },
     comments: {
       type: Array,
+      required: false,
+      default:[],
+    },
+    createdby: {
+      type: String,
+      required: true,
+      
+    },
+    categories: {
+      type: String,
       required: false,
       default:[],
     },
