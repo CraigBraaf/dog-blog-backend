@@ -21,15 +21,12 @@ router.get('/', async (req, res) => {
 router.post("/register", async (req, res) => {
   const {username, email, password} = req.body
   try {
-    const salt = await bcrypt.genSalt(10);
-    const hashedPass = await bcrypt.hash(password, salt);
-    
+    const hashedPass = await bcrypt.hash(password, 10);
     const user = new User({
       username,
       email,
       password: hashedPass,
     });
-
     const newUser = await user.save();
     const transporter = nodemailer.createTransport({
       service: 'gmail',
@@ -59,38 +56,25 @@ router.post("/register", async (req, res) => {
   }
 });
 
-//LOGIN
-// router.post("/login", async (req, res) => {
-//   try {
-//     const user = await User.findOne({ username: req.body.username });
-//     !user && res.status(400).json("Incorrect Username!");
-
-//     const validated = await bcrypt.compare(req.body.password, user.password);
-//     !validated && res.status(400).json("Incorrect Password!");
-
-//     const { password, ...others } = user._doc;
-//     res.status(200).json(others);
-//   } catch (err) {
-//     res.status(500).json(err);
-//   }
-// });
 router.post("/login", async (req, res) => {
-  const { username, password } = req.body;
-  const user = await User.findOne({ username });
-  
-  if (!user) res.status(404).json({ message: "Could not find user" });
-  if (await bcrypt.compare(password, user.password)) {
-      try {
-      const access_token = jwt.sign(
-          JSON.stringify(user),
-          process.env.ACCESSTOKEN
-      );
-      res.status(201).json({ jwt: access_token });
-      } catch (error) {
-      res.status(500).json({ message: error.message });
-      }
-  } else {
-      res.status(400).json({ message: "Email and password combination do not match" });
+  try {
+    const { email, password } = req.body;
+    const verify = await User.findOne({ email }, (err, user => {
+      if(!verify) return res.status(401).send({message: err.message})
+      if(!user) return res.sendStatus(404)
+      const matchedPass = bcrypt.compareSync(password, user.password )
+      if(!matchedPass) return res.sendStatus(404)
+      const token = jwt.sign({_id: user._id}, process.env.ACCESSTOKEN)
+      if(!token)return res.sendStatus(404)
+      res.header("auth-token", token).send({
+        _id: user._id,
+        username: user.username,
+        email: user.email,
+        accessToken: token,
+      })
+    }));
+  } catch (error) {
+    res.status(500).send({message: error.message})
   }
 });
 

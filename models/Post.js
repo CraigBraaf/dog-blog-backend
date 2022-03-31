@@ -15,24 +15,14 @@ const PostSchema = new mongoose.Schema(
       type: String,
       required: false,
     },
-    username: {
-      type: String,
-      required: false,
-    },
     comments: {
       type: Array,
       required: false,
       default:[],
     },
-    createdby: {
-      type: String,
+    username: {
+      type: Array,
       required: true,
-      
-    },
-    categories: {
-      type: String,
-      required: false,
-      default:[],
     },
   },
   { timestamps: true }
